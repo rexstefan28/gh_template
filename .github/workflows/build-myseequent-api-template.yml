@@ -12,23 +12,24 @@ jobs:
     steps:
     - run: |
         mkdir test
+      working-directory: ${{ github.workspace }}
+      
     - name: Check if language build folder exists
       id: language-build-check
       run: |
         if [ -d "${{ github.workspace }}/test" ]
         then
-          echo "result=true" >> $GITHUB_OUTPUT
+          echo "result=true" 
         else
-          echo "result=false" >>$GITHUB_OUTPUT
+          echo "result=false"
         fi
-        echo $result
         
-  Build-Language:
-    needs: Check-Language-Build
-    if: needs.Check-Language-Build.outputs.result == false
-    runs-on: ubuntu-latest
-    steps:
-    - name: Build Language
+#   Build-Language:
+#     needs: Check-Language-Build
+#     if: needs.Check-Language-Build.outputs.result == false
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: Build Language
 
-      run: |
-        ls
+#       run: |
+#         ls

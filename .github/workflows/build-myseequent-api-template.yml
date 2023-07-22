@@ -24,12 +24,12 @@ jobs:
           echo "result=false"
         fi
         
-#   Build-Language:
-#     needs: Check-Language-Build
-#     if: needs.Check-Language-Build.outputs.result == false
-#     runs-on: ubuntu-latest
-#     steps:
-#     - name: Build Language
+  Build-Language:
+    needs: Check-Language-Build
+    if: Check-Language-Build.outputs.result == false
+    runs-on: ubuntu-latest
+    steps:
+    - name: Build Language
 
-#       run: |
-#         ls
+      run: |
+        ls

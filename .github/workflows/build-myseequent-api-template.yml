@@ -1,69 +1,31 @@
-name: myseequent-api-template
+name: Test
 
 on:
-  workflow_call:
-    inputs:
-      projectName:  
-        description: 'Name of the project'
-        required: True
-        type: string
+  workflow_dispatch:
 
-
-env:
-  nuget_feed_name: Seequent-libraries
-  nuget_feed_source: https://pkgs.dev.azure.com/bentleycs/Seequent/_packaging/Seequent-libraries/nuget/v3/index.json
-  hasTests: False
-  buildConfiguration: Release
 
 jobs:
-  build:
+  Check-Language-Build:
     runs-on: ubuntu-latest
-    
+    outputs:
+      result: ${{ steps.language-build-check.outputs.result }}
     steps:
-    - uses: actions/checkout@v2
-
-    - run: Write-Host "##vso[task.setvariable variable=PackageVersion;]${{ env.packageVersion }}"
-      shell: powershell
-
-    - name: Extract branch name
-      shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      id: extract_branch
-
-    - name: Set Version and Branch name
+    - name: Check if language build folder exists
+      id: language-build-check
       run: |
-        $version = "2.1.0." + ${{github.run_number}}
-        $branch = "${{ steps.extract_branch.outputs.branch }}"
-        echo $branch
-        if (($branch) -and ($branch -cne "master")) {
-            $branch = $branch -replace "\W"
-            $version = "1.1.0." + ${{github.run_number}} + "-" + $branch
-        }
-        echo $version
-        echo "##[set-output name=version;]$(echo $version)"
-      id: extract_version
+        if [ -d "${{ github.workspace }}/.github"]
+        then
+          echo "result=true" >> $GITHUB_OUTPUT
+        else
+          echo "result=false" >>$GITHUB_OUTPUT
+        fi
+        
+  Build-Language:
+    needs: Check-Language-Build
+    if: (!failure() && !cancelled()) && (always() && (needs.Check-Language-Build.outputs.result == true ))
+    runs-on: ubuntu-latest
+    steps:
+    - name: Build Language
 
-    - name: .NET Core 5.0.x
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
-
-    - name: Auth NuGet
-      run: dotnet nuget add source ${{ env.nuget_feed_source }} -n ${{ env.nuget_feed_name }} -u rexstefan.edberg@bentley.com -p ${{ secrets.AZURE_DEVOPS_TOKEN }} --store-password-in-clear-text
-
-    - name: Restore Dependancies
-      run: dotnet restore 
-
-    - name: Build Projects
-      run: dotnet build --configuration ${{ env.buildConfiguration }}
-
-    - name: Run unit tests
-      run: dotnet test **/test/*Test*.csproj --configuration ${{ env.buildConfiguration }}
-      if: (${{ env.hasTests }} == True)
-
-    - name: Pack ${{ env.projectName }}
-      run: dotnet pack ${{ inputs.projectName }} --no-build --no-restore --include-symbols --include-source --version=${{ steps.extract_version.outputs.version }}
-
-    # - name: Publish Artifacts
-    #   run: dotnet nuget push ${{ github.workspace }}/*.nupkg
-                    
+      run: |
+        ls

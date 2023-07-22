@@ -19,10 +19,11 @@ jobs:
         else
           echo "result=false" >>$GITHUB_OUTPUT
         fi
+        echo $result
         
   Build-Language:
     needs: Check-Language-Build
-    if: (!failure() && !cancelled()) && (always() && (needs.Check-Language-Build.outputs.result == false ))
+    if: needs.Check-Language-Build.outputs.result == false
     runs-on: ubuntu-latest
     steps:
     - name: Build Language

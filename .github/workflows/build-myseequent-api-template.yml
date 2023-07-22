@@ -22,7 +22,7 @@ jobs:
         
   Build-Language:
     needs: Check-Language-Build
-    if: (!failure() && !cancelled()) && (always() && (needs.Check-Language-Build.outputs.result == true ))
+    if: (!failure() && !cancelled()) && (always() && (needs.Check-Language-Build.outputs.result == false ))
     runs-on: ubuntu-latest
     steps:
     - name: Build Language

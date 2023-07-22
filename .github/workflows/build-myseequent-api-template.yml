@@ -10,10 +10,12 @@ jobs:
     outputs:
       result: ${{ steps.language-build-check.outputs.result }}
     steps:
+    - run: |
+        mkdir test
     - name: Check if language build folder exists
       id: language-build-check
       run: |
-        if [ -d "${{ github.workspace }}/.github" ]
+        if [ -d "${{ github.workspace }}/test" ]
         then
           echo "result=true" >> $GITHUB_OUTPUT
         else

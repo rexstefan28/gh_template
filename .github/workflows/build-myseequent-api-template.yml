@@ -27,7 +27,7 @@ jobs:
         
   Build-Language:
     needs: Check-Language-Build
-    if: needs.Check-Language-Build.outputs.result == 'false'
+    if: needs.Check-Language-Build.outputs.result == 'true'
     runs-on: ubuntu-latest
     steps:
     - name: Build Language

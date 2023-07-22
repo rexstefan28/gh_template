@@ -13,7 +13,7 @@ jobs:
     - name: Check if language build folder exists
       id: language-build-check
       run: |
-        if [ -d "${{ github.workspace }}/.github"]
+        if [ -d "${{ github.workspace }}/.github" ]
         then
           echo "result=true" >> $GITHUB_OUTPUT
         else
